@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import ErrorAlert from "../../layout/Errors/ErrorAlert";
-import { listReservations, useQuery } from "../../utils/api";
-import { next, previous } from "../../utils/date-time";
+import ErrorAlert from "../../utils/Errors/ErrorAlert";
+import { next, previous, today } from "../../utils/date-time";
 
 /**
  * Defines the dashboard page.
@@ -10,23 +8,8 @@ import { next, previous } from "../../utils/date-time";
  *  the date for which the user wants to view reservations.
  * @returns {JSX.Element}
  */
-function Dashboard({ date }) {
+function Dashboard({ date, reservations, reservationsError }) {
   const history = useHistory()
-  const query = useQuery();
-  date = query.get("date") ? query.get("date") : date;
-  const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState(null);
-
-  useEffect(loadDashboard, [date]);
-
-  function loadDashboard() {
-    const abortController = new AbortController();
-    setReservationsError(null);
-    listReservations({ date }, abortController.signal)
-      .then(setReservations)
-      .catch(setReservationsError);
-    return () => abortController.abort();
-  }
 
   return (
     <main>
@@ -39,17 +22,18 @@ function Dashboard({ date }) {
       ) : (
         <ol>
           {reservations.map((reservation, index) => {
-            return <li key={index}>{reservation}</li>;
+            const r = reservation
+            return <li key={index}>{r.last_name}, {r.first_name[0]} will arrive at {r.reservation_time}</li>;
           })}
         </ol>
+        // null
       )}
       <div>
         <input type='button' value='Previous Day' onClick={() => history.push(`/dashboard?date=${previous(date)}`)} />
-        <input type='button' value='Today' onClick={() => history.push(`/dashboard`)} />
+        <input type='button' value='Today' onClick={() => history.push(`/dashboard?date=${today()}`)} />
         <input type='button' value='Next Day' onClick={() => history.push(`/dashboard?date=${next(date)}`)} />
       </div>
       <ErrorAlert error={reservationsError} />
-      {JSON.stringify(reservations)}
     </main>
   );
 }

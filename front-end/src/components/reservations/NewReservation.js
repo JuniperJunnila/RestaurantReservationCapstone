@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router";
-// import { createReservation } from "../../utils/api";
+import { createReservation } from "../../utils/api";
+import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
 function NewReservation() {
   const history = useHistory();
@@ -14,6 +15,7 @@ function NewReservation() {
     people: "",
   };
 
+  const [error, setError] = useState(null);
   const [newRes, setNewRes] = useState(defaultState);
 
   const _inputChange = (event) => {
@@ -47,13 +49,17 @@ function NewReservation() {
 
   const _submitHandler = (event) => {
     event.preventDefault();
-    // createReservation(newRes).then(() => history.push("/"));
-    history.push("/");
+    createReservation(newRes)
+      .then(() => {
+        history.push("/");
+      })
+      .catch(setError);
   };
 
   return (
     <main>
       <h1>NewReservation</h1>
+      <ErrorAlert error={error} />
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Enter Your Information Below</h4>
       </div>
