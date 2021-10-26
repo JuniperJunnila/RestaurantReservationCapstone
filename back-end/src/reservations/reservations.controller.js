@@ -104,6 +104,54 @@ const _validateTimeDate = async (req, res, next) => {
   next();
 };
 
+const _validateTimeSameDay = async (req, res, next) => {
+  const _asDateString = (date) => {
+    return `${date.getFullYear().toString(10)}-${(date.getMonth() + 1)
+      .toString(10)
+      .padStart(2, "0")}-${date.getDate().toString(10).padStart(2, "0")}`;
+  }
+  const {reservation_time, reservation_date} = res.locals
+  const today = _asDateString(new Date());
+  const now = new Date().getHours() * 100 + new Date().getMinutes();
+  const time = Number(
+    reservation_time.slice(0, 2) + reservation_time.slice(3)
+  );
+  const open = 1030;
+  const close = 2230;
+  const _timeString = (timeString) => {
+    timeString = timeString.toString();
+    if (timeString.length <= 2) timeString = "00" + timeString;
+    return timeString.slice(0, 2) + ":" + timeString.slice(2);
+  };
+  const messages = [
+    `Please enter a reservation date and time that is in the future.`,
+    `This time is before our restaurant is open, please enter a time after ${_timeString(
+      open
+    )}.`,
+    `Our restaurant closes at ${_timeString(
+      close
+    )}, please enter a time before ${_timeString(
+      close - 100
+    )} to allow your party the time to eat.`,
+  ];
+  if (today === reservation_date && time <= now) {
+    next({
+      status: 400,
+      message: messages[0],
+    });
+  } else if (time < open && time > 0) {
+    next({
+      status: 400,
+      message: messages[1],
+    });
+  } else if (time > close - 100) {
+    next({
+      status: 400,
+      message: messages[2],
+    });
+  }
+};
+
 //organizational middleware
 
 async function _createValidations(req, res, next) {
@@ -111,6 +159,7 @@ async function _createValidations(req, res, next) {
   _storeProperties(req, res, next);
   _validateDate(req, res, next);
   _validateTime(req, res, next);
+  await _validateTimeSameDay(req, res, next)
   await _validateTimeDate(req, res, next);
   _validatePeople(req, res, next);
   next();
