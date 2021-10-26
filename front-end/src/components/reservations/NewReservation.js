@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { createReservation } from "../../utils/api";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
-function NewReservation() {
+function NewReservation(loadDashboard) {
   const history = useHistory();
 
   const defaultState = {
@@ -50,8 +50,9 @@ function NewReservation() {
   const _submitHandler = (event) => {
     event.preventDefault();
     createReservation(newRes)
+      .then(loadDashboard)
       .then(() => {
-        history.push("/");
+        history.push(`/dashboard?date=${newRes.reservation_date}`);
       })
       .catch(setError);
   };
@@ -71,6 +72,7 @@ function NewReservation() {
           required
           type="text"
           name="first_name"
+          id="first_name"
           onChange={_inputChange}
           value={newRes.first_name}
         />
@@ -81,6 +83,7 @@ function NewReservation() {
           required
           type="text"
           name="last_name"
+          id="last_name"
           onChange={_inputChange}
           value={newRes.last_name}
         />
@@ -91,6 +94,7 @@ function NewReservation() {
           required
           type="tel"
           name="mobile_number"
+          id="mobile_number"
           minLength="10"
           maxLength="10"
           onChange={_inputChange}
@@ -103,6 +107,7 @@ function NewReservation() {
           required
           type="date"
           name="reservation_date"
+          id="reservation_date"
           onChange={_inputChange}
           value={newRes.reservation_date}
         />
@@ -113,6 +118,7 @@ function NewReservation() {
           required
           type="time"
           name="reservation_time"
+          id="reservation_time"
           onChange={_inputChange}
           value={newRes.reservation_time}
         />
@@ -123,6 +129,7 @@ function NewReservation() {
           required
           type="number"
           name="people"
+          id="people"
           onChange={_inputChange}
           value={newRes.people}
         />

@@ -14,27 +14,35 @@ import { listReservations, useQuery } from "../utils/api";
  * @returns {JSX.Element}
  */
 function Routes() {
-  const query = useQuery()
+  const query = useQuery();
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
-  const date = query.get('date') ? query.get('date') : today()
-  
+  const date = query.get("date") ? query.get("date") : today();
+
   function loadDashboard() {
     const abortController = new AbortController();
     setReservationsError(null);
-    listReservations({date: date}, abortController.signal)
+    listReservations({ date: date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
     return () => abortController.abort();
   }
-  
+
   useEffect(loadDashboard, [date]);
-  
+
   return (
     <Switch>
-      
-      <Route exact path="/reservations/new">
-        <NewReservation />
+      <Route exact={true} path="/reservations/new">
+        <NewReservation loadDashboard={loadDashboard} />
+      </Route>
+      <Route exact={true} path="/reservations">
+        <Redirect to={`/reservations?date=${date ? date : today()}`} />
+        <Dashboard
+          date={date ? date : today()}
+          reservations={reservations}
+          reservationsError={reservationsError}
+          loadDashboard={loadDashboard}
+        />
       </Route>
       <Route exact={true} path="/dashboard">
         <Redirect to={`/dashboard?date=${date ? date : today()}`} />
@@ -45,7 +53,6 @@ function Routes() {
           loadDashboard={loadDashboard}
         />
       </Route>
-
       <Route exact={true} path="/">
         <Redirect to={`/dashboard?date=${date ? date : today()}`} />
       </Route>
