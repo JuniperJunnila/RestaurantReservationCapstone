@@ -29,7 +29,7 @@ function Routes() {
   }
 
   useEffect(loadDashboard, [date]);
-
+ 
   return (
     <Switch>
       <Route exact={true} path="/reservations/new">
