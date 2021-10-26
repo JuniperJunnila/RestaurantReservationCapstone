@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { createReservation } from "../../utils/api";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
@@ -46,6 +46,40 @@ function NewReservation(loadDashboard) {
         break;
     }
   };
+
+  const _dateCatch = () => {
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const closedOn = 2;
+    const resTimeDate = new Date(
+      `${newRes.reservation_date}T${newRes.reservation_time}`
+    );
+    if (resTimeDate.getDay() === closedOn && resTimeDate < Date.now()) {
+      setError({
+        message: `We're sorry, the restaurant is closed on ${weekdays[closedOn]}s.\n
+        Please enter a reservation date and time that is in the future.`,
+      });
+    } else if (resTimeDate.getDay() === closedOn) {
+      setError({
+        message: `We're sorry, the restaurant is closed on ${weekdays[closedOn]}s.`,
+      });
+    } else if (resTimeDate < Date.now())
+      setError({
+        message: `Please enter a reservation date and time that is in the future.`,
+      });
+  };
+
+  useEffect(_dateCatch, [
+    newRes.reservation_date,
+    newRes.reservation_time,
+  ]);
 
   const _submitHandler = (event) => {
     event.preventDefault();

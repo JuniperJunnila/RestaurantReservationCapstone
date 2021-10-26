@@ -74,13 +74,44 @@ const _validatePeople = (req, res, next) => {
     });
 };
 
+const _validateTimeDate = async (req, res, next) => {
+  const { reservation_date, reservation_time } = res.locals;
+  const weekdays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const closedOn = 2;
+  const resTimeDate = new Date(`${reservation_date}T${reservation_time}`);
+
+  if (resTimeDate.getDay() === closedOn) {
+    return next({
+      status: 400,
+      message: `We're sorry, the restaurant is closed on ${weekdays[closedOn]}s.`,
+    });
+  }
+
+  if (resTimeDate < Date.now())
+    return next({
+      status: 400,
+      message: `Please enter a reservation date and time that is in the future.`,
+    });
+
+  next();
+};
+
 //organizational middleware
 
-function _createValidations(req, res, next) {
+async function _createValidations(req, res, next) {
   _validateProperties(req, res, next);
   _storeProperties(req, res, next);
   _validateDate(req, res, next);
   _validateTime(req, res, next);
+  await _validateTimeDate(req, res, next);
   _validatePeople(req, res, next);
   next();
 }
