@@ -89,9 +89,7 @@ function _createValidations(req, res, next) {
 
 async function list(req, res) {
   const { date } = req.query;
-  console.log(date)
   const reservations = await service.list(date);
-  console.log(reservations)
   res.json({ data: reservations });
 }
 
