@@ -5,6 +5,7 @@ import NotFound from "../utils/Errors/NotFound";
 import { today } from "../utils/date-time";
 import NewReservation from "../components/reservations/NewReservation";
 import { listReservations, useQuery } from "../utils/api";
+import NewTable from "../components/tables/NewTable";
 
 /**
  * Defines all the routes for the application.
@@ -32,6 +33,9 @@ function Routes() {
 
   return (
     <Switch>
+      <Route exact={true} path="/tables/new">
+        <NewTable loadDashboard={loadDashboard} />
+      </Route>
       <Route exact={true} path="/reservations/new">
         <NewReservation loadDashboard={loadDashboard} />
       </Route>

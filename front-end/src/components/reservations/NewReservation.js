@@ -4,7 +4,7 @@ import { createReservation } from "../../utils/api";
 import { asDateString } from "../../utils/date-time";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
-function NewReservation(loadDashboard) {
+export default function NewReservation(loadDashboard) {
   const history = useHistory();
 
   const defaultState = {
@@ -134,7 +134,7 @@ function NewReservation(loadDashboard) {
 
   return (
     <main>
-      <h1>NewReservation</h1>
+      <h1>New Reservation</h1>
       <ErrorAlert error={error} />
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Enter Your Information Below</h4>
@@ -214,5 +214,3 @@ function NewReservation(loadDashboard) {
     </main>
   );
 }
-
-export default NewReservation;
