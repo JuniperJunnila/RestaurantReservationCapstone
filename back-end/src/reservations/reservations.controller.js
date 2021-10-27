@@ -100,8 +100,6 @@ const _validateTimeDate = async (req, res, next) => {
       status: 400,
       message: `Please enter a reservation date and time that is in the future.`,
     });
-
-  next();
 };
 
 const _validateTimeSameDay = async (req, res, next) => {
@@ -109,13 +107,11 @@ const _validateTimeSameDay = async (req, res, next) => {
     return `${date.getFullYear().toString(10)}-${(date.getMonth() + 1)
       .toString(10)
       .padStart(2, "0")}-${date.getDate().toString(10).padStart(2, "0")}`;
-  }
-  const {reservation_time, reservation_date} = res.locals
+  };
+  const { reservation_time, reservation_date } = res.locals;
   const today = _asDateString(new Date());
   const now = new Date().getHours() * 100 + new Date().getMinutes();
-  const time = Number(
-    reservation_time.slice(0, 2) + reservation_time.slice(3)
-  );
+  const time = Number(reservation_time.slice(0, 2) + reservation_time.slice(3));
   const open = 1030;
   const close = 2230;
   const _timeString = (timeString) => {
@@ -159,7 +155,7 @@ async function _createValidations(req, res, next) {
   _storeProperties(req, res, next);
   _validateDate(req, res, next);
   _validateTime(req, res, next);
-  await _validateTimeSameDay(req, res, next)
+  await _validateTimeSameDay(req, res, next);
   await _validateTimeDate(req, res, next);
   _validatePeople(req, res, next);
   next();
