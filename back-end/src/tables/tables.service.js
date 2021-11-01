@@ -23,9 +23,11 @@ function listResById(reservation_id) {
 }
 
 function occupy(table_id) {
-  return db("tables")
-    .where({ table_id: table_id })
-    .update({ occupied: true });
+  return db("tables").where({ table_id: table_id }).update({ occupied: true });
+}
+
+function free(table_id) {
+  return db("tables").where({ table_id: table_id }).update({ occupied: false });
 }
 
 module.exports = {
@@ -34,4 +36,5 @@ module.exports = {
   listById,
   listResById,
   occupy,
+  free,
 };

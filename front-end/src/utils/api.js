@@ -107,3 +107,8 @@ export async function editTable(table, reservation_id, signal) {
   const body = JSON.stringify({ data: {reservation_id: reservation_id} });
   return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
 }
+
+export async function freeTable(table, signal) {
+  const url = `${API_BASE_URL}/tables/${table.table_id}/seat`;
+  return await fetchJson(url, { headers, signal, method: "DELETE" }, []);
+}
