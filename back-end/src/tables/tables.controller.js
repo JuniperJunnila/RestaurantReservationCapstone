@@ -93,6 +93,12 @@ const _validateSeatCapacity = (req, res, next) => {
   }
 };
 
+const _validateCurrentlyOccupied = (req, res, next) => {
+  const {occupied} = res.locals
+  if(!occupied) next({status: 400,
+    message: `The table you selected is not occupied.`,})
+}
+
 //organizational middleware
 
 async function _createValidations(req, res, next) {
@@ -108,6 +114,12 @@ async function _occupyValidations(req, res, next) {
   await _validateReservationId(req, res, next);
   await _listById(req, res, next);
   _validateSeatCapacity(req, res, next);
+  next();
+}
+
+async function _freeValidation(req, res, next) {
+  await _listById(req, res, next);
+  _validateCurrentlyOccupied(req, res, next)
   next();
 }
 
@@ -129,8 +141,15 @@ async function occupy(req, res) {
   res.status(200).json({ data: data });
 }
 
+async function free(req, res) {
+  const { table_id } = req.params;
+  const data = await service.free(table_id);
+  res.sendStatus(200);
+}
+
 module.exports = {
   create: [asyncErrorBoundary(_createValidations), asyncErrorBoundary(create)],
   list: [asyncErrorBoundary(list)],
   occupy: [asyncErrorBoundary(_occupyValidations), asyncErrorBoundary(occupy)],
+  free: [asyncErrorBoundary(_freeValidation), asyncErrorBoundary(free)],
 };

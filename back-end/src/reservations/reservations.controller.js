@@ -151,7 +151,7 @@ const _validateTimeSameDay = async (req, res, next) => {
 const _validateId = async (req, res, next) => {
   const { reservation_id } = req.params;
   const reservation = await service.listById(reservation_id);
-  if (!reservation) {
+  if (!reservation || reservation.length === 0) {
     return next({
       status: 404,
       message: `reservation_id ${reservation_id} does not exist`,
