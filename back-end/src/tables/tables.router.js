@@ -1,24 +1,18 @@
-/**
- * Defines the router for reservation resources.
- *
- * @type {Router}
- */
-
 const cors = require("cors");
-const router = require("express").Router();
-const controller = require("./reservations.controller");
 const methodNotAllowed = require("../errors/methodNotAllowed");
+const router = require("express").Router();
+const controller = require("./tables.controller");
 
 router.use(cors());
 
-router.route("/:reservation_id").get(controller.listById).all(methodNotAllowed);
+router.route("/:table_id/seat").put(controller.occupy).all(methodNotAllowed);
 
 router.route("/new").post(controller.create).all(methodNotAllowed);
 
 router
   .route("/")
-  .get(controller.list)
   .post(controller.create)
+  .get(controller.list)
   .all(methodNotAllowed);
 
 module.exports = router;

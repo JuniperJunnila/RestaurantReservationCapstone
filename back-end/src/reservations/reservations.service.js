@@ -14,7 +14,15 @@ function list(date) {
     .orderBy("reservation_time");
 }
 
+function listById(reservation_id) {
+  return db("reservations")
+    .select("*")
+    .where({ reservation_id: reservation_id })
+    .orderBy("reservation_time");
+}
+
 module.exports = {
   create,
   list,
+  listById,
 };
