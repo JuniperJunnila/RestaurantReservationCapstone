@@ -16,10 +16,13 @@ export default function NewTable(loadDashboard) {
 
   const _submitHandler = (event) => {
     event.preventDefault();
-    createTable(table)
+    const abortController = new AbortController();
+
+    createTable(table, abortController.abort())
       .then(loadDashboard)
-      .then(history.push("/"))
+      .then(() => history.push(`/dashboard`))
       .catch(setError);
+    return () => abortController.abort();
   };
 
   const _inputChange = (event) => {
@@ -28,7 +31,7 @@ export default function NewTable(loadDashboard) {
     const inputId = event.target.name;
     inputId === "table_name"
       ? setTable({ ...table, table_name: inputValue })
-      : setTable({ ...table, capacity: inputValue });
+      : setTable({ ...table, capacity: Number(inputValue) });
   };
 
   return (

@@ -3,6 +3,7 @@ exports.up = function (knex) {
     table.increments("table_id").primary().notNullable();
     table.string("table_name").notNullable();
     table.integer("capacity").notNullable();
+    table.boolean('occupied').notNullable();
     table.timestamps(true, true);
   });
 };

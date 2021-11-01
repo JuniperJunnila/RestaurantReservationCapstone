@@ -1,10 +1,18 @@
-const cors = require('cors');
-const methodNotAllowed = require('../errors/methodNotAllowed');
+const cors = require("cors");
+const methodNotAllowed = require("../errors/methodNotAllowed");
 const router = require("express").Router();
-const controller = require('./tables.controller')
+const controller = require("./tables.controller");
 
-router.use(cors())
+router.use(cors());
 
-router.route('/').post(controller.create).all(methodNotAllowed)
+router.route("/:table_id/seat").put(controller.occupy).all(methodNotAllowed);
 
-module.exports = router
+router.route("/new").post(controller.create).all(methodNotAllowed);
+
+router
+  .route("/")
+  .post(controller.create)
+  .get(controller.list)
+  .all(methodNotAllowed);
+
+module.exports = router;
