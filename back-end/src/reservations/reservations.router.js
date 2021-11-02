@@ -15,7 +15,7 @@ router.route("/new").post(controller.create).all(methodNotAllowed);
 
 router.route("/:reservation_id/status").put(controller.updateStatus).all(methodNotAllowed);
 
-router.route("/:reservation_id").get(controller.listById).all(methodNotAllowed);
+router.route("/:reservation_id").get(controller.listById).put(controller.edit).all(methodNotAllowed);
 
 router
   .route("/")

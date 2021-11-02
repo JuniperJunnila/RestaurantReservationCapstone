@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
-import { createReservation } from "../../utils/api";
+import { useHistory, useParams } from "react-router";
+import {
+  createReservation,
+  editReservation,
+  listReservationsById,
+} from "../../utils/api";
 import { asDateString } from "../../utils/date-time";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
-export default function NewReservation(loadDashboard) {
+export default function ReservationEditor({ loadDashboard }) {
   const history = useHistory();
-
+  const { reservation_id } = useParams();
+  const { href } = window.location;
   const defaultState = {
     first_name: "",
     last_name: "",
@@ -14,10 +19,46 @@ export default function NewReservation(loadDashboard) {
     reservation_date: "",
     reservation_time: "",
     people: "",
+    status: "new",
   };
 
   const [error, setError] = useState(null);
   const [newRes, setNewRes] = useState(defaultState);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!reservation_id)
+      return () => {
+        isMounted = false;
+      };
+    const abortController = new AbortController();
+    listReservationsById(
+      {
+        reservation_id: reservation_id,
+      },
+      abortController.signal
+    )
+      .then((recieved) => {
+        if (isMounted) setNewRes(recieved);
+      })
+      .catch(setError);
+    return () => {
+      isMounted = false;
+    };
+  }, [reservation_id]);
+
+  useEffect(() => {
+    if (href.includes("reservations/new"))
+      setNewRes({
+        first_name: "",
+        last_name: "",
+        mobile_number: "",
+        reservation_date: "",
+        reservation_time: "",
+        people: "",
+        status: "new",
+      });
+  }, [href]);
 
   const _inputChange = (event) => {
     event.preventDefault();
@@ -124,17 +165,31 @@ export default function NewReservation(loadDashboard) {
 
   const _submitHandler = (event) => {
     event.preventDefault();
-    createReservation(newRes)
-      .then(loadDashboard)
-      .then(() => {
-        history.push(`/dashboard?date=${newRes.reservation_date}`);
-      })
-      .catch(setError);
+    if (!reservation_id) {
+      createReservation(newRes)
+        .then(loadDashboard)
+        .then(() => {
+          history.push(`/dashboard?date=${newRes.reservation_date}`);
+        })
+        .catch(setError);
+    } else {
+      editReservation(newRes)
+        .then(loadDashboard)
+        .then(() => {
+          history.goBack();
+        })
+        .catch(setError);
+    }
+  };
+
+  const FormHeader = () => {
+    if (reservation_id) return <h1>Edit Reservation</h1>;
+    return <h1>New Reservation</h1>;
   };
 
   return (
     <main>
-      <h1>New Reservation</h1>
+      <FormHeader />
       <ErrorAlert error={error} />
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Enter Your Information Below</h4>

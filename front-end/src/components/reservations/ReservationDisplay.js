@@ -1,8 +1,39 @@
+import { useState } from "react";
 import { seatReservation } from "../../utils/api";
+import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
 export default function ReservationDisplay({ reservations, loadDashboard }) {
+  const [error, setError] = useState(null);
+
+  function _clickHandler(event) {
+    event.preventDefault();
+    setError(null);
+    event.target.name === "seat"
+      ? _seatClickHandler(event)
+      : _clickHandler(event);
+  }
+
   function _seatClickHandler(event) {
-    seatReservation(event.target.value, 'seated');
+    const abortController = new AbortController();
+    seatReservation(event.target.value, "seated", abortController.signal)
+      .then(loadDashboard)
+      .catch(setError);
+    return () => abortController.abort();
+  }
+
+  function _cancelHandler(event) {
+    event.preventDefault();
+    const abortController = new AbortController();
+    if (
+      !window.confirm(
+        "Do you want to cancel this reservation? This cannot be undone."
+      )
+    )
+      return null;
+    seatReservation(event.target.value, "cancelled", abortController.signal)
+      .then(loadDashboard)
+      .catch(setError);
+    return () => abortController.abort();
   }
 
   const reservationList =
@@ -19,15 +50,32 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
               </h5>
               <h5 data-reservation-id-status={r.reservation_id}>{r.status}</h5>
               {r.reservation_id === "booked" ? null : (
-                <a href={`/reservations/${r.reservation_id}/seat`}>
+                <div>
+                  <a href={`/reservations/${r.reservation_id}/seat`}>
+                    <button
+                      type="button"
+                      name="seat"
+                      value={r.reservation_id}
+                      onClick={_clickHandler}
+                    >
+                      Seat
+                    </button>
+                  </a>
+                  <a href={`/reservations/${r.reservation_id}/edit`}>
+                    <button type="button" value={r.reservation_id}>
+                      Edit
+                    </button>
+                  </a>
                   <button
                     type="button"
+                    name="cancel"
                     value={r.reservation_id}
-                    onClick={_seatClickHandler}
+                    onClick={_cancelHandler}
+                    data-reservation-id-cancel={r.reservation_id}
                   >
-                    Seat
+                    Cancel
                   </button>
-                </a>
+                </div>
               )}
             </li>
           );
@@ -35,5 +83,10 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
       </ol>
     );
 
-  return <div>{reservationList}</div>;
+  return (
+    <div>
+      <ErrorAlert error={error} />
+      {reservationList}
+    </div>
+  );
 }
