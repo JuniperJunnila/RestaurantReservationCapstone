@@ -16,7 +16,7 @@ export default function Dashboard({
   reservationsError,
   tables,
   tablesError,
-  loadDashboard
+  loadDashboard,
 }) {
   const history = useHistory();
 
@@ -29,22 +29,31 @@ export default function Dashboard({
         </h4>
       </div>
 
-      <ReservationDisplay reservations={reservations} loadDashboard={loadDashboard} />
+      <ReservationDisplay
+        reservations={reservations}
+        loadDashboard={loadDashboard}
+      />
       <TablesDisplay tables={tables} loadDashboard={loadDashboard} />
 
       <div>
-        <input
+        <button
           type="button"
+          name="yesterday"
+          id="yesterday"
           value="Previous Day"
           onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
         />
-        <input
+        <button
           type="button"
+          name="today"
+          id="today"
           value="Today"
           onClick={() => history.push(`/dashboard?date=${today()}`)}
         />
-        <input
+        <button
           type="button"
+          name="tomorrow"
+          id="tomorrow"
           value="Next Day"
           onClick={() => history.push(`/dashboard?date=${next(date)}`)}
         />

@@ -10,7 +10,7 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
     setError(null);
     event.target.name === "seat"
       ? _seatClickHandler(event)
-      : _clickHandler(event);
+      : _cancelHandler(event);
   }
 
   function _seatClickHandler(event) {
@@ -36,49 +36,63 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
     return () => abortController.abort();
   }
 
+  const SeatButton = ({ r }) => {
+    if (r.status === "booked")
+      return (
+        <a href={`/reservations/${r.reservation_id}/seat`}>
+          <button
+            type="button"
+            name="seat"
+            id="seat"
+            value={r.reservation_id}
+            onClick={_clickHandler}
+          >
+            Seat
+          </button>
+        </a>
+      );
+    return null;
+  };
+
+  const ListItem = ({ r, index }) => {
+    if (r.status === "finished" || r.status === "cancelled") return null;
+    return (
+      <li key={index}>
+        <h5>
+          {r.last_name}, {r.first_name[0]} will arrive at {r.reservation_time}
+        </h5>
+        <h5 data-reservation-id-status={r.reservation_id}>{r.status}</h5>
+        <SeatButton r={r} />
+        <a href={`/reservations/${r.reservation_id}/edit`}>
+          <button type="button" name="edit" id="edit" value={r.reservation_id}>
+            Edit
+          </button>
+        </a>
+        <button
+          type="button"
+          name="cancel"
+          id="cancel"
+          value={r.reservation_id}
+          onClick={_cancelHandler}
+          data-reservation-id-cancel={r.reservation_id}
+        >
+          Cancel
+        </button>
+      </li>
+    );
+  };
+
   const reservationList =
-    !reservations || reservations.length === 0 ? (
+    !reservations ||
+    reservations.length === 0 ||
+    reservations.every(
+      (r) => r.status === "finished" || r.status === "cancelled"
+    ) ? (
       <h4>There are no reservations on this date</h4>
     ) : (
       <ol>
         {reservations.map((r, index) => {
-          return (
-            <li key={index}>
-              <h5>
-                {r.last_name}, {r.first_name[0]} will arrive at{" "}
-                {r.reservation_time}
-              </h5>
-              <h5 data-reservation-id-status={r.reservation_id}>{r.status}</h5>
-              {r.reservation_id === "booked" ? null : (
-                <div>
-                  <a href={`/reservations/${r.reservation_id}/seat`}>
-                    <button
-                      type="button"
-                      name="seat"
-                      value={r.reservation_id}
-                      onClick={_clickHandler}
-                    >
-                      Seat
-                    </button>
-                  </a>
-                  <a href={`/reservations/${r.reservation_id}/edit`}>
-                    <button type="button" value={r.reservation_id}>
-                      Edit
-                    </button>
-                  </a>
-                  <button
-                    type="button"
-                    name="cancel"
-                    value={r.reservation_id}
-                    onClick={_cancelHandler}
-                    data-reservation-id-cancel={r.reservation_id}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </li>
-          );
+          return <ListItem r={r} index={index} />;
         })}
       </ol>
     );

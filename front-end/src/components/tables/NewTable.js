@@ -64,8 +64,14 @@ export default function NewTable(loadDashboard) {
           onChange={_inputChange}
           value={table.capacity}
         />
-        <input type="submit" value="Submit" />
-        <input type="button" value="Cancel" onClick={() => history.goBack()} />
+        <button type="submit" name="submit" id="submit" value="Submit" />
+        <button
+          type="button"
+          name="cancel"
+          id="cancel"
+          value="Cancel"
+          onClick={() => history.goBack()}
+        />
       </form>
     </main>
   );

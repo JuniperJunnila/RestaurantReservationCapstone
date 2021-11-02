@@ -19,7 +19,7 @@ export default function ReservationEditor({ loadDashboard }) {
     reservation_date: "",
     reservation_time: "",
     people: "",
-    status: "new",
+    status: "booked",
   };
 
   const [error, setError] = useState(null);
@@ -56,12 +56,13 @@ export default function ReservationEditor({ loadDashboard }) {
         reservation_date: "",
         reservation_time: "",
         people: "",
-        status: "new",
+        status: "booked",
       });
   }, [href]);
 
   const _inputChange = (event) => {
     event.preventDefault();
+    setError(null);
     const inputValue = event.target.value;
     const inputId = event.target.name;
     switch (inputId) {
@@ -159,9 +160,9 @@ export default function ReservationEditor({ loadDashboard }) {
     }
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(_timeCatch, [newRes.reservation_date, newRes.reservation_time]);
+  useEffect(_timeCatch, [newRes]);
 
-  useEffect(_dateCatch, [newRes.reservation_date, newRes.reservation_time]);
+  useEffect(_dateCatch, [newRes]);
 
   const _submitHandler = (event) => {
     event.preventDefault();
@@ -263,8 +264,19 @@ export default function ReservationEditor({ loadDashboard }) {
           onChange={_inputChange}
           value={newRes.people}
         />
-        <input type="submit" value="Confirm Reservation" />
-        <input type="button" value="Cancel" onClick={() => history.goBack()} />
+        <button
+          type="submit"
+          id="submit"
+          name="submit"
+          value="Confirm Reservation"
+        />
+        <button
+          type="button"
+          id="cancel"
+          name="cancel"
+          value="Cancel"
+          onClick={() => history.goBack()}
+        />
       </form>
     </main>
   );

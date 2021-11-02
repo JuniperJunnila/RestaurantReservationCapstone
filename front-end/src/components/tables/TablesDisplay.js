@@ -29,6 +29,8 @@ export default function TablesDisplay({ tables, loadDashboard }) {
                   <h5 data-table-id-status={t.table_id}>Occupied</h5>
                   <button
                     type="button"
+                    name="finish"
+                    id="finish"
                     value={t.table_id}
                     data-table-id-finish={t.table_id}
                     onClick={_clickHandler}
