@@ -59,6 +59,7 @@ const _validateReservationId = async (req, res, next) => {
       message: `Property 'reservation_id' must be a valid ID. ${reservation_id} is not a valid ID.`,
     });
   let { people } = listedReservation;
+  res.locals.reservation = listedReservation;
   res.locals.people = people;
 };
 
@@ -72,9 +73,10 @@ const _listById = async (req, res, next) => {
       message: `table id ${table_id} does not exist`,
     });
   }
-  let { occupied, capacity } = table;
+  let { occupied, capacity, reservation_id } = table;
   res.locals.occupied = occupied;
   res.locals.capacity = capacity;
+  res.locals.reservation_id = reservation_id;
 };
 
 const _validateSeatCapacity = (req, res, next) => {
@@ -94,10 +96,16 @@ const _validateSeatCapacity = (req, res, next) => {
 };
 
 const _validateCurrentlyOccupied = (req, res, next) => {
-  const {occupied} = res.locals
-  if(!occupied) next({status: 400,
-    message: `The table you selected is not occupied.`,})
-}
+  const { occupied } = res.locals;
+  if (!occupied)
+    next({ status: 400, message: `The table you selected is not occupied.` });
+};
+
+const _validateCurrentlySeated = (req, res, next) => {
+  const { status } = res.locals.reservation;
+  if (status === "seated")
+    next({ status: 400, message: "This reservation ios already seated" });
+};
 
 //organizational middleware
 
@@ -114,12 +122,13 @@ async function _occupyValidations(req, res, next) {
   await _validateReservationId(req, res, next);
   await _listById(req, res, next);
   _validateSeatCapacity(req, res, next);
+  _validateCurrentlySeated(req, res, next);
   next();
 }
 
-async function _freeValidation(req, res, next) {
+async function _freeValidations(req, res, next) {
   await _listById(req, res, next);
-  _validateCurrentlyOccupied(req, res, next)
+  _validateCurrentlyOccupied(req, res, next);
   next();
 }
 
@@ -137,13 +146,15 @@ async function list(req, res) {
 
 async function occupy(req, res) {
   const { table_id } = req.params;
-  const data = await service.occupy(table_id);
+  const { reservation_id } = req.body.data;
+  const data = await service.occupy(table_id, reservation_id);
   res.status(200).json({ data: data });
 }
 
 async function free(req, res) {
   const { table_id } = req.params;
-  const data = await service.free(table_id);
+  let { reservation_id } = res.locals;
+  const data = await service.free(table_id, reservation_id);
   res.sendStatus(200);
 }
 
@@ -151,5 +162,5 @@ module.exports = {
   create: [asyncErrorBoundary(_createValidations), asyncErrorBoundary(create)],
   list: [asyncErrorBoundary(list)],
   occupy: [asyncErrorBoundary(_occupyValidations), asyncErrorBoundary(occupy)],
-  free: [asyncErrorBoundary(_freeValidation), asyncErrorBoundary(free)],
+  free: [asyncErrorBoundary(_freeValidations), asyncErrorBoundary(free)],
 };

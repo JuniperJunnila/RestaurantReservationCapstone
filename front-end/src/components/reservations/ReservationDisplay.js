@@ -1,6 +1,8 @@
+import { seatReservation } from "../../utils/api";
+
 export default function ReservationDisplay({ reservations, loadDashboard }) {
-  function _clickHandler(event) {
-    seatReservation(event.target.value);
+  function _seatClickHandler(event) {
+    seatReservation(event.target.value, 'seated');
   }
 
   const reservationList =
@@ -21,7 +23,7 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
                   <button
                     type="button"
                     value={r.reservation_id}
-                    onClick={_clickHandler}
+                    onClick={_seatClickHandler}
                   >
                     Seat
                   </button>
