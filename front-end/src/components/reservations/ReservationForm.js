@@ -264,13 +264,13 @@ export default function ReservationEditor({ loadDashboard }) {
           onChange={_inputChange}
           value={newRes.people}
         />
-        <button
+        <input
           type="submit"
           id="submit"
           name="submit"
           value="Confirm Reservation"
         />
-        <button
+        <input
           type="button"
           id="cancel"
           name="cancel"

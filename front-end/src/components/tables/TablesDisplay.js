@@ -27,7 +27,7 @@ export default function TablesDisplay({ tables, loadDashboard }) {
               {t.occupied ? (
                 <div>
                   <h5 data-table-id-status={t.table_id}>Occupied</h5>
-                  <button
+                  <input
                     type="button"
                     name="finish"
                     id="finish"
@@ -36,7 +36,7 @@ export default function TablesDisplay({ tables, loadDashboard }) {
                     onClick={_clickHandler}
                   >
                     Finish
-                  </button>
+                  </input>
                 </div>
               ) : (
                 <h5 data-table-id-status={t.table_id}>Free</h5>

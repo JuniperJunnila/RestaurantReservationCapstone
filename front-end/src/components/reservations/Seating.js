@@ -96,8 +96,8 @@ export default function Seating({ tables, loadDasboard }) {
           );
         })}
       </select>
-      <button type="submit" name="submit" id="submit" value="Submit" />
-      <button
+      <input type="submit" name="submit" id="submit" value="Submit" />
+      <input
         type="button"
         name="cancel"
         id="cancel"

@@ -64,8 +64,8 @@ export default function NewTable(loadDashboard) {
           onChange={_inputChange}
           value={table.capacity}
         />
-        <button type="submit" name="submit" id="submit" value="Submit" />
-        <button
+        <input type="submit" name="submit" id="submit" value="Submit" />
+        <input
           type="button"
           name="cancel"
           id="cancel"

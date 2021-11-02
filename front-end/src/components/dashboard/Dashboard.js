@@ -36,21 +36,21 @@ export default function Dashboard({
       <TablesDisplay tables={tables} loadDashboard={loadDashboard} />
 
       <div>
-        <button
+        <input
           type="button"
           name="yesterday"
           id="yesterday"
           value="Previous Day"
           onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
         />
-        <button
+        <input
           type="button"
           name="today"
           id="today"
           value="Today"
           onClick={() => history.push(`/dashboard?date=${today()}`)}
         />
-        <button
+        <input
           type="button"
           name="tomorrow"
           id="tomorrow"

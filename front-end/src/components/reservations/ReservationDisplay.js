@@ -40,7 +40,7 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
     if (r.status === "booked")
       return (
         <a href={`/reservations/${r.reservation_id}/seat`}>
-          <button
+          <input
             type="button"
             name="seat"
             id="seat"
@@ -48,7 +48,7 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
             onClick={_clickHandler}
           >
             Seat
-          </button>
+          </input>
         </a>
       );
     return null;
@@ -64,11 +64,11 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
         <h5 data-reservation-id-status={r.reservation_id}>{r.status}</h5>
         <SeatButton r={r} />
         <a href={`/reservations/${r.reservation_id}/edit`}>
-          <button type="button" name="edit" id="edit" value={r.reservation_id}>
+          <input type="button" name="edit" id="edit" value={r.reservation_id}>
             Edit
-          </button>
+          </input>
         </a>
-        <button
+        <input
           type="button"
           name="cancel"
           id="cancel"
@@ -77,7 +77,7 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
           data-reservation-id-cancel={r.reservation_id}
         >
           Cancel
-        </button>
+        </input>
       </li>
     );
   };

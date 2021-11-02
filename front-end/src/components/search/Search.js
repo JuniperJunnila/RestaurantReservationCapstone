@@ -66,7 +66,7 @@ export default function Search() {
           onChange={_inputChange}
           value={searchbar}
         />
-        <button type="submit" name="find" id="find" value="Find" />
+        <input type="submit" name="find" id="find" value="Find" />
       </form>
       <FoundComponent />
     </div>
