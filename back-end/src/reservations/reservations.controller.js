@@ -226,8 +226,14 @@ async function _updateStatusValidations(req, res, next) {
 //executive functions
 
 async function list(req, res) {
-  const { date } = req.query;
-  const reservations = await service.list(date);
+  let { date = null } = req.query;
+  let { mobile_number = null } = req.query;
+
+  let reservations
+
+  if(date) reservations = await service.list(date);
+  if(mobile_number) reservations = await service.listMobile(mobile_number)
+
   res.json({ data: reservations });
 }
 

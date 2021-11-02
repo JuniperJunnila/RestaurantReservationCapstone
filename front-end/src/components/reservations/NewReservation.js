@@ -31,7 +31,7 @@ export default function NewReservation(loadDashboard) {
         setNewRes({ ...newRes, last_name: inputValue });
         break;
       case "mobile_number":
-        if (inputValue.match(/\d/))
+        if (inputValue.match(/\d$/) || inputValue.match(/^.{0}$/))
           setNewRes({ ...newRes, mobile_number: inputValue });
         break;
       case "reservation_date":
