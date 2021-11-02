@@ -11,7 +11,7 @@ function list(date) {
   return db("reservations")
     .select("*")
     .where({ reservation_date: date })
-    .whereNot({status: 'finished'})
+    .whereNot({ status: "finished" })
     .orderBy("reservation_time");
 }
 
@@ -19,6 +19,13 @@ function listById(reservation_id) {
   return db("reservations")
     .select("*")
     .where({ reservation_id: reservation_id })
+    .orderBy("reservation_time");
+}
+
+function listMobile(mobile_number) {
+  return db("reservations")
+    .select("*")
+    .where("mobile_number", "like", `${mobile_number}%`)
     .orderBy("reservation_time");
 }
 
@@ -44,6 +51,7 @@ module.exports = {
   create,
   list,
   listById,
+  listMobile,
   toBooked,
   toSeated,
   toFinished,
