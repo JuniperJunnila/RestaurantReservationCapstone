@@ -53,8 +53,12 @@ async function fetchJson(url, options, onCancel) {
   }
 }
 
+export function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 /**
- * Retrieves all existing reservation.
+ * Retrieves all existing reservations.
  * @returns {Promise<[reservation]>}
  *  a promise that resolves to a possibly empty array of reservation saved in the database.
  */
@@ -81,10 +85,6 @@ export async function listTables(signal) {
   return await fetchJson(url, { headers, signal }, []);
 }
 
-export function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 export async function createReservation(reservation, signal) {
   const url = `${API_BASE_URL}/reservations/new`;
   const options = {
@@ -104,7 +104,13 @@ export async function createTable(table, signal) {
 
 export async function editTable(table, reservation_id, signal) {
   const url = `${API_BASE_URL}/tables/${table.table_id}/seat`;
-  const body = JSON.stringify({ data: {reservation_id: reservation_id} });
+  const body = JSON.stringify({ data: { reservation_id: reservation_id } });
+  return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
+}
+
+export async function seatReservation(reservation_id, new_status, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
+  const body = JSON.stringify({ data: { status: new_status } });
   return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
 }
 

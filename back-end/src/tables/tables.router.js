@@ -5,7 +5,11 @@ const controller = require("./tables.controller");
 
 router.use(cors());
 
-router.route("/:table_id/seat").put(controller.occupy).delete(controller.free).all(methodNotAllowed);
+router
+  .route("/:table_id/seat")
+  .put(controller.occupy)
+  .delete(controller.free)
+  .all(methodNotAllowed);
 
 router.route("/new").post(controller.create).all(methodNotAllowed);
 

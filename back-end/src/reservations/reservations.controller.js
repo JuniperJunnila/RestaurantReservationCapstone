@@ -74,6 +74,16 @@ const _validatePeople = (req, res, next) => {
     });
 };
 
+const _validateStatus = (req, res, next) => {
+  const { status } = req.body.data;
+  if (!status) req.body.data.status = "booked";
+  if (status === "seated" || status === "finished")
+    next({
+      status: 400,
+      message: `New reservation must be initialized as booked, this reservation is initialized at ${status}`,
+    });
+};
+
 const _validateTimeDate = async (req, res, next) => {
   const { reservation_date, reservation_time } = res.locals;
   const weekdays = [
@@ -158,7 +168,33 @@ const _validateId = async (req, res, next) => {
     });
   }
   res.locals.reservation = reservation;
-  next()
+};
+
+const _validateStatusUpdate = (req, res, next) => {
+  const { status } = req.body.data;
+
+  if (!status || status.length === 0)
+    next({
+      status: 400,
+      message: `Must have a status property`,
+    });
+  if (status != "booked" && status != "seated" && status != "finished")
+    next({
+      status: 400,
+      message: `Status unknown, must have a status property of booked, seated, or finished`,
+    });
+};
+
+const _validateUnfinished = (req, res, next) => {
+  const { status } = res.locals.reservation[0];
+
+  if (status === "finished")
+    next({
+      status: 400,
+      message: `Cannot alter the status of a finished table`,
+    });
+
+  res.locals.status = status;
 };
 
 //organizational middleware
@@ -171,6 +207,19 @@ async function _createValidations(req, res, next) {
   await _validateTimeSameDay(req, res, next);
   await _validateTimeDate(req, res, next);
   _validatePeople(req, res, next);
+  _validateStatus(req, res, next);
+  next();
+}
+
+async function _listByIdValidation(req, res, next) {
+  await _validateId(req, res, next);
+  next();
+}
+
+async function _updateStatusValidations(req, res, next) {
+  await _validateId(req, res, next);
+  _validateStatusUpdate(req, res, next);
+  _validateUnfinished(req, res, next);
   next();
 }
 
@@ -192,8 +241,24 @@ async function listById(req, res) {
   res.status(200).json({ data: reservation[0] });
 }
 
+async function updateStatus(req, res) {
+  const { reservation_id } = req.params;
+  const { status } = req.body.data;
+  if (status === "booked") await service.toBooked(reservation_id);
+  if (status === "seated") await service.toSeated(reservation_id);
+  if (status === "finished") await service.toFinished(reservation_id);
+  res.status(200).json({ data: { status: status } });
+}
+
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [asyncErrorBoundary(_createValidations), asyncErrorBoundary(create)],
-  listById: [asyncErrorBoundary(_validateId), asyncErrorBoundary(listById)],
+  listById: [
+    asyncErrorBoundary(_listByIdValidation),
+    asyncErrorBoundary(listById),
+  ],
+  updateStatus: [
+    asyncErrorBoundary(_updateStatusValidations),
+    asyncErrorBoundary(updateStatus),
+  ],
 };
