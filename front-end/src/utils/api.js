@@ -109,7 +109,7 @@ export async function editTable(table, reservation_id, signal) {
 }
 
 export async function seatReservation(reservation_id, new_status, signal) {
-  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
   const body = JSON.stringify({ data: { status: new_status } });
   return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
 }

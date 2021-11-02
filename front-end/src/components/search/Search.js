@@ -46,7 +46,7 @@ export default function Search() {
           6
         )}-${searchbar.slice(6)}`)
       : (formattedSearchbar = `${searchbar.slice(0, 3)}-${searchbar.slice(3)}`);
-    return formattedSearchbar
+    return formattedSearchbar;
   };
 
   return (
@@ -66,9 +66,7 @@ export default function Search() {
           onChange={_inputChange}
           value={searchbar}
         />
-        <button type="submit" value="Find">
-          Find
-        </button>
+        <button type="submit" name="find" id="find" value="Find" />
       </form>
       <FoundComponent />
     </div>
