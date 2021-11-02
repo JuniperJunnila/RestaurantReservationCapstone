@@ -29,22 +29,16 @@ function listMobile(mobile_number) {
     .orderBy("reservation_time");
 }
 
-function toSeated(reservation_id) {
+function toStatus(reservation_id, status) {
   return db("reservations")
     .where({ reservation_id: reservation_id })
-    .update({ status: "seated" });
+    .update({ status: status });
 }
 
-function toFinished(reservation_id) {
+function edit(reservation) {
   return db("reservations")
-    .where({ reservation_id: reservation_id })
-    .update({ status: "finished" });
-}
-
-function toBooked(reservation_id) {
-  return db("reservations")
-    .where({ reservation_id: reservation_id })
-    .update({ status: "booked" });
+    .where({ reservation_id: reservation.reservation_id })
+    .update({ ...reservation });
 }
 
 module.exports = {
@@ -52,7 +46,6 @@ module.exports = {
   list,
   listById,
   listMobile,
-  toBooked,
-  toSeated,
-  toFinished,
+  toStatus,
+  edit,
 };

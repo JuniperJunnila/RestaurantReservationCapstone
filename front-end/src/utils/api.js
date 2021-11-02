@@ -114,6 +114,14 @@ export async function seatReservation(reservation_id, new_status, signal) {
   return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
 }
 
+export async function editReservation(updated_reservation, signal) {
+  const url = new URL(
+    `${API_BASE_URL}/reservations/${updated_reservation.reservation_id}/edit`
+  );
+  const body = JSON.stringify({ data: updated_reservation });
+  return await fetchJson(url, { headers, signal, method: "PUT", body });
+}
+
 export async function freeTable(table, signal) {
   const url = `${API_BASE_URL}/tables/${table.table_id}/seat`;
   return await fetchJson(url, { headers, signal, method: "DELETE" }, []);

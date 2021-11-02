@@ -172,26 +172,27 @@ const _validateId = async (req, res, next) => {
 
 const _validateStatusUpdate = (req, res, next) => {
   const { status } = req.body.data;
+  const validStatuses = ["booked", "seated", "finished", "cancelled"];
 
   if (!status || status.length === 0)
     next({
       status: 400,
       message: `Must have a status property`,
     });
-  if (status != "booked" && status != "seated" && status != "finished")
+  if (!validStatuses.includes(status))
     next({
       status: 400,
-      message: `Status unknown, must have a status property of booked, seated, or finished`,
+      message: `Status unknown, must have a status property of booked, seated, finished, or cancelled`,
     });
 };
 
 const _validateUnfinished = (req, res, next) => {
   const { status } = res.locals.reservation[0];
 
-  if (status === "finished")
+  if (status === "finished" || status === "cancelled")
     next({
       status: 400,
-      message: `Cannot alter the status of a finished table`,
+      message: `Cannot alter the status of a ${status} table`,
     });
 
   res.locals.status = status;
@@ -223,16 +224,29 @@ async function _updateStatusValidations(req, res, next) {
   next();
 }
 
+async function _editValidations(req, res, next) {
+  await _validateId(req, res, next)
+  _validateProperties(req, res, next);
+  _storeProperties(req, res, next);
+  _validateDate(req, res, next);
+  _validateTime(req, res, next);
+  await _validateTimeSameDay(req, res, next);
+  await _validateTimeDate(req, res, next);
+  _validatePeople(req, res, next);
+  _validateStatus(req, res, next);
+  next();
+}
+
 //executive functions
 
 async function list(req, res) {
   let { date = null } = req.query;
   let { mobile_number = null } = req.query;
 
-  let reservations
+  let reservations;
 
-  if(date) reservations = await service.list(date);
-  if(mobile_number) reservations = await service.listMobile(mobile_number)
+  if (date) reservations = await service.list(date);
+  if (mobile_number) reservations = await service.listMobile(mobile_number);
 
   res.json({ data: reservations });
 }
@@ -250,10 +264,13 @@ async function listById(req, res) {
 async function updateStatus(req, res) {
   const { reservation_id } = req.params;
   const { status } = req.body.data;
-  if (status === "booked") await service.toBooked(reservation_id);
-  if (status === "seated") await service.toSeated(reservation_id);
-  if (status === "finished") await service.toFinished(reservation_id);
+  await service.toStatus(reservation_id, status);
   res.status(200).json({ data: { status: status } });
+}
+
+async function edit(req, res) {
+  await service.edit(req.body.data)
+  res.status(200).json({data: req.body.data})
 }
 
 module.exports = {
@@ -267,4 +284,5 @@ module.exports = {
     asyncErrorBoundary(_updateStatusValidations),
     asyncErrorBoundary(updateStatus),
   ],
+  edit: [asyncErrorBoundary(_editValidations),asyncErrorBoundary(edit)],
 };
