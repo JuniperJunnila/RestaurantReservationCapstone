@@ -21,7 +21,7 @@ export default function Dashboard({
   const history = useHistory();
 
   return (
-    <main>
+    <main className="menu-align">
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">
@@ -40,6 +40,7 @@ export default function Dashboard({
           type="button"
           name="yesterday"
           id="yesterday"
+          className="btn btn-a border-a border-right-0"
           value="Previous Day"
           onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
         />
@@ -47,6 +48,7 @@ export default function Dashboard({
           type="button"
           name="today"
           id="today"
+          className="btn btn-a border-a"
           value="Today"
           onClick={() => history.push(`/dashboard?date=${today()}`)}
         />
@@ -54,6 +56,7 @@ export default function Dashboard({
           type="button"
           name="tomorrow"
           id="tomorrow"
+          className="btn btn-a border-a border-left-0"
           value="Next Day"
           onClick={() => history.push(`/dashboard?date=${next(date)}`)}
         />
