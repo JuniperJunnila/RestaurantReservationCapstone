@@ -7,6 +7,24 @@ h5 {
   font-size: larger;
 }
 
+.list-group-item {
+  background-color: #e8e5da;
+}
+
+.lgi-table {
+  background-color: #D9BFD3;
+}
+
+.lgi-interior {
+  background-color: #e8e5da;
+  color: #3a445d;
+}
+
+.lgi-table-interior {
+  background-color: #D9BFD3;
+  color: #3a445d;
+}
+
 .side-bar {
   background-color: #393a44;
   min-width: 200px;
@@ -53,6 +71,14 @@ h5 {
 .form-control {
   background-color: #E8E5DA;
   color: #393a44;
+}
+
+.minw100 {
+  min-width: 100px;
+}
+
+.minw300 {
+  min-width: 300px;
 }
 
 @media (min-width: 768px) {

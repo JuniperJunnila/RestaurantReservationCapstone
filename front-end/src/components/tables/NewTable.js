@@ -19,8 +19,8 @@ export default function NewTable(loadDashboard) {
     const abortController = new AbortController();
 
     createTable(table, abortController.abort())
-      .then(loadDashboard)
       .then(() => history.push(`/dashboard`))
+      .then(loadDashboard)
       .catch(setError);
     return () => abortController.abort();
   };
@@ -36,42 +36,66 @@ export default function NewTable(loadDashboard) {
 
   return (
     <main>
-      <h1>New Table</h1>
+      <div className="d-flex mb-1 justify-content-center">
+        <h1>New Table</h1>
+      </div>
       <ErrorAlert error={error} />
-      <div className="d-md-flex mb-3">
+      <div className="d-flex mb-3 justify-content-center">
         <h4 className="mb-0">Enter The Table's Information Below</h4>
       </div>
+
       <form onSubmit={_submitHandler}>
-        <label htmlFor="table_name">
-          <h5>Table Name</h5>
-        </label>
-        <input
-          name="table_name"
-          id="table_name"
-          type="text"
-          minLength={2}
-          onChange={_inputChange}
-          value={table.table_name}
-        />
-        <label htmlFor="table_name">
-          <h5>Capacity</h5>
-        </label>
-        <input
-          name="capacity"
-          id="capacity"
-          type="number"
-          min={1}
-          onChange={_inputChange}
-          value={table.capacity}
-        />
-        <input type="submit" name="submit" id="submit" value="Submit" />
-        <input
-          type="button"
-          name="cancel"
-          id="cancel"
-          value="Cancel"
-          onClick={() => history.goBack()}
-        />
+        <div className="row">
+          <div className="col">
+            <label htmlFor="table_name">
+              <h5>Table Name</h5>
+            </label>
+            <input
+              name="table_name"
+              id="table_name"
+              type="text"
+              className="form-control"
+              minLength={2}
+              onChange={_inputChange}
+              value={table.table_name}
+            />
+          </div>
+          <div className="col">
+            <label htmlFor="table_name">
+              <h5>Capacity</h5>
+            </label>
+            <input
+              name="capacity"
+              id="capacity"
+              type="number"
+              className="form-control"
+              min={1}
+              onChange={_inputChange}
+              value={table.capacity}
+            />
+          </div>
+        </div>
+        <div className="d-flex mt-3 justify-content-center">
+          <button
+            type="submit"
+            name="submit"
+            id="submit"
+            className="btn btn-a border-a col-2 minw100"
+            value="Submit"
+          >
+            Submit
+          </button>
+          <button
+            type="button"
+            name="cancel"
+            id="cancel"
+            className="btn btn-warn border-warn col-2 minw100"
+            value="Cancel"
+            onClick={() => history.goBack()}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </main>
   );

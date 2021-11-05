@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useHistory } from "react-router";
 import { seatReservation } from "../../utils/api";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
 export default function ReservationDisplay({ reservations, loadDashboard }) {
   const [error, setError] = useState(null);
+  const history = useHistory()
 
   function _clickHandler(event) {
     event.preventDefault();
@@ -15,9 +17,10 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
 
   function _seatClickHandler(event) {
     const abortController = new AbortController();
-    seatReservation(event.target.value, "seated", abortController.signal)
-      .then(loadDashboard)
-      .catch(setError);
+    history.push(`/reservations/${event.target.value}/seat`)
+    // seatReservation(event.target.value, "seated", abortController.signal)
+    //   .then(loadDashboard)
+    //   .catch(setError);
     return () => abortController.abort();
   }
 
@@ -42,6 +45,7 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
         <a href={`/reservations/${r.reservation_id}/seat`}>
           <button
             type="button"
+            className="btn btn-a border-a border-right-0"
             name="seat"
             value={r.reservation_id}
             onClick={_clickHandler}
@@ -56,20 +60,30 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
   const ListItem = ({ r, index }) => {
     if (r.status === "finished" || r.status === "cancelled") return null;
     return (
-      <li key={index}>
-        <h5>
+      <li className="list-group-item" key={index}>
+        <h5 className="lgi-interior">
           {r.last_name}, {r.first_name[0]} will arrive at {r.reservation_time}
         </h5>
-        <h5 data-reservation-id-status={r.reservation_id}>{r.status}</h5>
+        <h5
+          className="lgi-interior"
+          data-reservation-id-status={r.reservation_id}
+        >
+          {r.status}
+        </h5>
         <SeatButton r={r} />
         <a href={`/reservations/${r.reservation_id}/edit`}>
-          <button type="button" value={r.reservation_id}>
+          <button
+            type="button"
+            className="btn btn-a border-a"
+            value={r.reservation_id}
+          >
             Edit
           </button>
         </a>
         <button
           type="button"
           name="cancel"
+          className="btn btn-warn border-warn"
           value={r.reservation_id}
           onClick={_cancelHandler}
           data-reservation-id-cancel={r.reservation_id}
@@ -86,11 +100,13 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
     reservations.every(
       (r) => r.status === "finished" || r.status === "cancelled"
     ) ? (
-      <h4>There are no reservations on this date</h4>
+      <div className="d-md-flex mb-3 justify-content-center">
+        <h4>There are no reservations on this date</h4>
+      </div>
     ) : (
-      <ol>
+      <ol className="list-group">
         {reservations.map((r, index) => {
-          return <ListItem r={r} index={index} />;
+          return <ListItem key={"listItem " + index} r={r} index={index} />;
         })}
       </ol>
     );

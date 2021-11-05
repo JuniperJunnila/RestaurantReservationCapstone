@@ -22,44 +22,54 @@ export default function Dashboard({
 
   return (
     <main className="menu-align">
-      <h1>Dashboard</h1>
-      <div className="d-md-flex mb-3">
+      <div className="d-flex mb-1 justify-content-center">
+        <h1>Dashboard</h1>
+      </div>
+      <div className="d-flex mb-4 justify-content-center">
         <h4 className="mb-0">
           Reservations for {date.slice(5)}-{date.slice(0, 4)}
         </h4>
       </div>
 
-      <ReservationDisplay
-        reservations={reservations}
-        loadDashboard={loadDashboard}
-      />
+      <div className="pb-2">
+        <ReservationDisplay
+          reservations={reservations}
+          loadDashboard={loadDashboard}
+        />
+      </div>
       <TablesDisplay tables={tables} loadDashboard={loadDashboard} />
 
-      <div>
-        <input
+      <div className="d-flex mt-3 justify-content-center">
+        <button
           type="button"
           name="yesterday"
           id="yesterday"
           className="btn btn-a border-a border-right-0"
           value="Previous Day"
           onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
-        />
-        <input
+        >
+          Previous Day
+        </button>
+        <button
           type="button"
           name="today"
           id="today"
           className="btn btn-a border-a"
           value="Today"
           onClick={() => history.push(`/dashboard?date=${today()}`)}
-        />
-        <input
+        >
+          Today
+        </button>
+        <button
           type="button"
           name="tomorrow"
           id="tomorrow"
           className="btn btn-a border-a border-left-0"
           value="Next Day"
           onClick={() => history.push(`/dashboard?date=${next(date)}`)}
-        />
+        >
+          Tomorrow
+        </button>
       </div>
       <ErrorAlert error={reservationsError} />
       <ErrorAlert error={tablesError} />

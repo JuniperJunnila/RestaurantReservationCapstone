@@ -7,6 +7,7 @@ import {
 } from "../../utils/api";
 import { asDateString } from "../../utils/date-time";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
+import { _formatSearchbar } from "../search/Search";
 
 export default function ReservationEditor({ loadDashboard }) {
   const history = useHistory();
@@ -39,7 +40,13 @@ export default function ReservationEditor({ loadDashboard }) {
       abortController.signal
     )
       .then((recieved) => {
-        if (isMounted) setNewRes(recieved);
+        if (isMounted) {
+          recieved = {
+            ...recieved,
+            mobile_number: recieved.mobile_number.split("-").join(""),
+          };
+          setNewRes(recieved);
+        }
       })
       .catch(setError);
     return () => {
@@ -166,15 +173,19 @@ export default function ReservationEditor({ loadDashboard }) {
 
   const _submitHandler = (event) => {
     event.preventDefault();
+    const submittableRes = {
+      ...newRes,
+      mobile_number: _formatSearchbar(newRes.mobile_number),
+    };
     if (!reservation_id) {
-      createReservation(newRes)
+      createReservation(submittableRes)
         .then(loadDashboard)
         .then(() => {
           history.push(`/dashboard?date=${newRes.reservation_date}`);
         })
         .catch(setError);
     } else {
-      editReservation(newRes)
+      editReservation(submittableRes)
         .then(loadDashboard)
         .then(() => {
           history.goBack();
@@ -196,7 +207,7 @@ export default function ReservationEditor({ loadDashboard }) {
     <main>
       <FormHeader />
       <ErrorAlert error={error} />
-      <div className="d-md-flex mb-3 justify-content-center">
+      <div className="d-flex mb-3 justify-content-center">
         <h4 className="mb-0">Enter Your Information Below</h4>
       </div>
       <form className="flex" onSubmit={_submitHandler}>
@@ -291,22 +302,26 @@ export default function ReservationEditor({ loadDashboard }) {
             />
           </div>
         </div>
-        <div className="row justify-content-center pt-5">
-          <input
+        <div className="row justify-content-center pt-3">
+          <button
             type="submit"
             id="submit"
             name="submit"
             className="btn btn-a border-a border-right-0"
             value="Confirm Reservation"
-          />
-          <input
+          >
+            Confirm Reservation
+          </button>
+          <button
             type="button"
             id="cancel"
             name="cancel"
             className="btn btn-warn"
             value="Cancel"
             onClick={() => history.goBack()}
-          />
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </main>

@@ -2,10 +2,7 @@ const db = require("../db/connection");
 const { toSeated } = require("../reservations/reservations.service");
 
 function create(table) {
-  return db("tables")
-    .insert(table)
-    .returning("*")
-    .then((createdRecords) => createdRecords[0]);
+  return db("tables").insert(table).returning("*");
 }
 
 function list() {

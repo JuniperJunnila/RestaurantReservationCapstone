@@ -3,6 +3,18 @@ import { listReservations } from "../../utils/api";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 import ReservationDisplay from "../reservations/ReservationDisplay";
 
+export const _formatSearchbar = (searchbar) => {
+  let formattedSearchbar = searchbar;
+  if (searchbar.length < 3) return searchbar;
+  searchbar.length > 6
+    ? (formattedSearchbar = `${searchbar.slice(0, 3)}-${searchbar.slice(
+        3,
+        6
+      )}-${searchbar.slice(6)}`)
+    : (formattedSearchbar = `${searchbar.slice(0, 3)}-${searchbar.slice(3)}`);
+  return formattedSearchbar;
+};
+
 export default function Search() {
   const [searchbar, setSearchbar] = useState("");
   const [error, setError] = useState(null);
@@ -21,7 +33,6 @@ export default function Search() {
     setError(null);
 
     const formattedSearchbar = _formatSearchbar(searchbar);
-
     await listReservations(
       { mobile_number: formattedSearchbar },
       abortController.signal
@@ -33,42 +44,46 @@ export default function Search() {
 
   const FoundComponent = () => {
     if (found.length === 0) return null;
-    return <ReservationDisplay reservations={found} />;
+    return <ReservationDisplay key="reservationdisplay" reservations={found} />;
   };
 
   useState(FoundComponent, [found]);
 
-  const _formatSearchbar = (searchbar) => {
-    let formattedSearchbar = searchbar;
-    searchbar.length > 6
-      ? (formattedSearchbar = `${searchbar.slice(0, 3)}-${searchbar.slice(
-          3,
-          6
-        )}-${searchbar.slice(6)}`)
-      : (formattedSearchbar = `${searchbar.slice(0, 3)}-${searchbar.slice(3)}`);
-    return formattedSearchbar;
-  };
-
   return (
     <div>
-      <h1>Search by Phone Number</h1>
+      <div className="d-md-flex mb-3 justify-content-center">
+        <h1>Search by Phone Number</h1>
+      </div>
       <ErrorAlert error={error} />
-      <form onSubmit={_submitHandler}>
+
+      <form
+        className="row d-md-flex mb-3 justify-content-center"
+        onSubmit={_submitHandler}
+      >
         <label htmlFor="mobile_number"></label>
         <input
           name="mobile_number"
           id="mobile_number"
           placeholder="Enter a customer's phone number"
           required
+          className="form-control col-5 minw300"
           type="tel"
           minLength="1"
           maxLength="10"
           onChange={_inputChange}
           value={searchbar}
         />
-        <input type="submit" name="find" id="find" value="Find" />
+        <button
+          type="submit"
+          className="btn btn-a border-a col-1 minw100"
+          name="find"
+          id="find"
+          value="Find"
+        >
+          Find
+        </button>
       </form>
-      <FoundComponent />
+      <FoundComponent key="foundcomponent" />
     </div>
   );
 }

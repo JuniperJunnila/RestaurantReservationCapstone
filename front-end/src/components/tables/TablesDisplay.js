@@ -15,31 +15,44 @@ export default function TablesDisplay({ tables, loadDashboard }) {
 
   const tableList =
     !tables || tables.length === 0 ? (
-      <h4>There are no tables</h4>
+      <div className="d-md-flex mb-3 justify-content-center">
+        <h4>There are no tables</h4>
+      </div>
     ) : (
-      <ul>
+      <ul className="list-group">
         {tables.map((t, index) => {
           return (
-            <li key={index}>
-              <h5>
+            <li className="list-group-item lgi-table" key={index}>
+              <h5 className="lgi-table-interior">
                 {t.table_name}: seats up to {t.capacity}
               </h5>
               {t.occupied ? (
-                <div>
-                  <h5 data-table-id-status={t.table_id}>Occupied</h5>
-                  <input
+                <div className="lgi-table-interior">
+                  <h5
+                    className="lgi-table-interior"
+                    data-table-id-status={t.table_id}
+                  >
+                    Occupied
+                  </h5>
+                  <button
                     type="button"
                     name="finish"
                     id="finish"
+                    className="btn btn-a border-a"
                     value={t.table_id}
                     data-table-id-finish={t.table_id}
                     onClick={_clickHandler}
                   >
                     Finish
-                  </input>
+                  </button>
                 </div>
               ) : (
-                <h5 data-table-id-status={t.table_id}>Free</h5>
+                <h5
+                  className="lgi-table-interior"
+                  data-table-id-status={t.table_id}
+                >
+                  Free
+                </h5>
               )}
             </li>
           );

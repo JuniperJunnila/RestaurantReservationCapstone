@@ -136,7 +136,7 @@ async function _freeValidations(req, res, next) {
 
 async function create(req, res) {
   const response = await service.create(req.body.data);
-  res.status(201).json({ data: response });
+  res.status(201).json({ data: response[0] });
 }
 
 async function list(req, res) {
