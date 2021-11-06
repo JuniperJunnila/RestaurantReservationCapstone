@@ -155,7 +155,7 @@ async function free(req, res) {
   const { table_id } = req.params;
   let { reservation_id } = res.locals;
   const data = await service.free(table_id, reservation_id);
-  res.sendStatus(200);
+  res.status(200).json({data: data});
 }
 
 module.exports = {

@@ -18,9 +18,6 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
   function _seatClickHandler(event) {
     const abortController = new AbortController();
     history.push(`/reservations/${event.target.value}/seat`)
-    // seatReservation(event.target.value, "seated", abortController.signal)
-    //   .then(loadDashboard)
-    //   .catch(setError);
     return () => abortController.abort();
   }
 
@@ -60,9 +57,9 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
   const ListItem = ({ r, index }) => {
     if (r.status === "finished" || r.status === "cancelled") return null;
     return (
-      <li className="list-group-item" key={index}>
+      <li className="list-group-item" key={r.reservation_id}>
         <h5 className="lgi-interior">
-          {r.last_name}, {r.first_name[0]} will arrive at {r.reservation_time}
+          {r.last_name}, {r.first_name} will arrive at {r.reservation_time}
         </h5>
         <h5
           className="lgi-interior"
@@ -100,13 +97,13 @@ export default function ReservationDisplay({ reservations, loadDashboard }) {
     reservations.every(
       (r) => r.status === "finished" || r.status === "cancelled"
     ) ? (
-      <div className="d-md-flex mb-3 justify-content-center">
+      <div className="d-flex mb-3 justify-content-center">
         <h4>There are no reservations on this date</h4>
       </div>
     ) : (
       <ol className="list-group">
         {reservations.map((r, index) => {
-          return <ListItem key={"listItem " + index} r={r} index={index} />;
+          return <ListItem key={"listItem " + r.reservation_id} r={r} index={index} />;
         })}
       </ol>
     );

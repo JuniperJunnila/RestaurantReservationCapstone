@@ -1,6 +1,9 @@
+import { useHistory } from "react-router";
 import { freeTable } from "../../utils/api";
+import { today } from "../../utils/date-time";
 
 export default function TablesDisplay({ tables, loadDashboard }) {
+  const history = useHistory();
   async function _clickHandler({ target }) {
     if (
       !window.confirm(
@@ -9,7 +12,9 @@ export default function TablesDisplay({ tables, loadDashboard }) {
     )
       return null;
     const abortController = new AbortController();
-    await freeTable(target.value, abortController.signal).then(loadDashboard);
+    await freeTable(target.value, abortController.signal)
+      .then(loadDashboard)
+      .then(history.push(`/dashboard?date=${today()}`));
     return () => abortController.abort();
   }
 
@@ -20,17 +25,17 @@ export default function TablesDisplay({ tables, loadDashboard }) {
       </div>
     ) : (
       <ul className="list-group">
-        {tables.map((t, index) => {
+        {tables.map((table, index) => {
           return (
-            <li className="list-group-item lgi-table" key={index}>
+            <li className="list-group-item lgi-table" key={table.table_id}>
               <h5 className="lgi-table-interior">
-                {t.table_name}: seats up to {t.capacity}
+                {table.table_name}: seats up to {table.capacity}
               </h5>
-              {t.occupied ? (
+              {table.occupied ? (
                 <div className="lgi-table-interior">
                   <h5
                     className="lgi-table-interior"
-                    data-table-id-status={t.table_id}
+                    data-table-id-status={table.table_id}
                   >
                     Occupied
                   </h5>
@@ -39,8 +44,9 @@ export default function TablesDisplay({ tables, loadDashboard }) {
                     name="finish"
                     id="finish"
                     className="btn btn-a border-a"
-                    value={t.table_id}
-                    data-table-id-finish={t.table_id}
+                    value={table.table_id}
+                    data-reservation-date={table.reservation_date}
+                    data-table-id-finish={table.table_id}
                     onClick={_clickHandler}
                   >
                     Finish
@@ -49,7 +55,7 @@ export default function TablesDisplay({ tables, loadDashboard }) {
               ) : (
                 <h5
                   className="lgi-table-interior"
-                  data-table-id-status={t.table_id}
+                  data-table-id-status={table.table_id}
                 >
                   Free
                 </h5>

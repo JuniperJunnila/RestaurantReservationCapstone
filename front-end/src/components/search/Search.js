@@ -43,7 +43,12 @@ export default function Search() {
   };
 
   const FoundComponent = () => {
-    if (found.length === 0) return null;
+    if (found.length === 0)
+      return (
+        <div className="d-flex mb-1 justify-content-center">
+          <h4>No reservations found</h4>
+        </div>
+      );
     return <ReservationDisplay key="reservationdisplay" reservations={found} />;
   };
 
@@ -51,13 +56,13 @@ export default function Search() {
 
   return (
     <div>
-      <div className="d-md-flex mb-3 justify-content-center">
+      <div className="d-flex mb-3 justify-content-center">
         <h1>Search by Phone Number</h1>
       </div>
       <ErrorAlert error={error} />
 
       <form
-        className="row d-md-flex mb-3 justify-content-center"
+        className="row d-flex mb-3 justify-content-center"
         onSubmit={_submitHandler}
       >
         <label htmlFor="mobile_number"></label>

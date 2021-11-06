@@ -53,10 +53,6 @@ async function fetchJson(url, options, onCancel) {
   }
 }
 
-export function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 /**
  * Retrieves all existing reservations.
  * @returns {Promise<[reservation]>}

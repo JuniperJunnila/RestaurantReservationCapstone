@@ -9,7 +9,7 @@ import { asDateString } from "../../utils/date-time";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 import { _formatSearchbar } from "../search/Search";
 
-export default function ReservationEditor({ loadDashboard }) {
+export default function ReservationForm({ loadDashboard }) {
   const history = useHistory();
   const { reservation_id } = useParams();
   const { href } = window.location;
@@ -43,6 +43,7 @@ export default function ReservationEditor({ loadDashboard }) {
         if (isMounted) {
           recieved = {
             ...recieved,
+            reservation_date: recieved.reservation_date.slice(0, 10),
             mobile_number: recieved.mobile_number.split("-").join(""),
           };
           setNewRes(recieved);
@@ -50,6 +51,7 @@ export default function ReservationEditor({ loadDashboard }) {
       })
       .catch(setError);
     return () => {
+      abortController.abort();
       isMounted = false;
     };
   }, [reservation_id]);
@@ -124,6 +126,7 @@ export default function ReservationEditor({ loadDashboard }) {
       setError({
         message: `Please enter a reservation date and time that is in the future.`,
       });
+    return null;
   };
 
   const _timeCatch = () => {
@@ -162,42 +165,48 @@ export default function ReservationEditor({ loadDashboard }) {
       setError({
         message: messages[2],
       });
-    } else if (error && messages.includes(error.message)) {
-      setError(null);
     }
+    return null;
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(_timeCatch, [newRes]);
-
-  useEffect(_dateCatch, [newRes]);
 
   const _submitHandler = (event) => {
     event.preventDefault();
+    _timeCatch();
+    _dateCatch();
+    if (error) return null;
+    const abortController = new AbortController();
     const submittableRes = {
       ...newRes,
       mobile_number: _formatSearchbar(newRes.mobile_number),
     };
     if (!reservation_id) {
-      createReservation(submittableRes)
+      createReservation(submittableRes, abortController.signal)
         .then(loadDashboard)
         .then(() => {
           history.push(`/dashboard?date=${newRes.reservation_date}`);
         })
         .catch(setError);
     } else {
-      editReservation(submittableRes)
+      editReservation(submittableRes, abortController.signal)
         .then(loadDashboard)
         .then(() => {
-          history.goBack();
+          history.push(`/dashboard?date=${newRes.reservation_date}`);
         })
         .catch(setError);
     }
+    return () => abortController.abort();
   };
 
   const FormHeader = () => {
-    if (reservation_id) return <h1>Edit Reservation</h1>;
+    if (reservation_id)
+      return (
+        <div className="d-flex mb-3 justify-content-center">
+          <h1>Edit Reservation</h1>
+        </div>
+      );
     return (
-      <div className="d-md-flex mb-3 justify-content-center">
+      <div className="d-flex mb-3 justify-content-center">
         <h1>New Reservation</h1>
       </div>
     );
@@ -241,7 +250,6 @@ export default function ReservationEditor({ loadDashboard }) {
             />
           </div>
         </div>
-
         <div className="form-group pt-3">
           <label htmlFor="mobile_number">
             <h5>Phone Number</h5>
@@ -252,7 +260,7 @@ export default function ReservationEditor({ loadDashboard }) {
             className="form-control"
             name="mobile_number"
             id="mobile_number"
-            minLength="10"
+            minLength="7"
             maxLength="10"
             onChange={_inputChange}
             value={newRes.mobile_number}
@@ -308,9 +316,9 @@ export default function ReservationEditor({ loadDashboard }) {
             id="submit"
             name="submit"
             className="btn btn-a border-a border-right-0"
-            value="Confirm Reservation"
+            value="Submit"
           >
-            Confirm Reservation
+            Submit Reservation
           </button>
           <button
             type="button"

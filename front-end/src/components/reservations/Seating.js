@@ -3,7 +3,7 @@ import { useHistory, useParams } from "react-router";
 import { editTable, listReservationsById } from "../../utils/api";
 import ErrorAlert from "../../utils/Errors/ErrorAlert";
 
-export default function Seating({ tables, loadDasboard }) {
+export default function Seating({ tables, loadDashboard }) {
   const { reservation_id } = useParams();
   const history = useHistory();
 
@@ -65,13 +65,15 @@ export default function Seating({ tables, loadDasboard }) {
 
   const _submitHandler = (event) => {
     event.preventDefault();
+    const abortController = new AbortController()
     if (error) return null;
     editTable(currentTable, reservation_id)
-      .then(loadDasboard)
+      .then(loadDashboard)
       .then(() => {
         history.push("/dashboard");
       })
       .catch(setError);
+    return () => abortController.abort
   };
 
   if (!tables || !reservation) return <h3>Missing Tables or Reservation</h3>;
